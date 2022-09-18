@@ -12,25 +12,31 @@ import './PlaceForm.css'
 
 const UpdatePlace = () => {
     const placeId = useParams().placeId
-    const place = DUMMY_PLACES.find(item => item.id == placeId)
 
     const [formState, inputHandler] = useForm({
         title: {
-            value: place.title,
+            value: '',
             isValid: true
         }
         ,
         description: {
-            value: place.description,
+            value: '',
             isValid: true
         }
     }, true)
+
+    const place = DUMMY_PLACES.find(item => item.id == placeId)
+
+    const placeUpdateSubmitHandler = event => {
+        event.preventDefault()
+        console.log(formState.inputs)
+    }
     if (!place) {
         return <h2>Place not found!</h2>
     }
 
     return (
-        <form className='place-form'>
+        <form className='place-form' onSubmit={placeUpdateSubmitHandler}>
             <Input id='title'
                 element='input'
                 type='text'
