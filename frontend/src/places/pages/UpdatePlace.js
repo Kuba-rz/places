@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { DUMMY_PLACES } from './UserPlaces'
 import { VALIDATOR_REQUIRE, VALIDATOR_MINLENGTH } from '../../shared/util/validators'
@@ -6,6 +6,7 @@ import { useForm } from '../../shared/hooks/form-hook'
 
 import Button from '../../shared/components/FormElements/Button'
 import Input from '../../shared/components/FormElements/Input'
+import Card from '../../shared/components/UIElements/Card'
 
 import './PlaceForm.css'
 
@@ -13,29 +14,59 @@ import './PlaceForm.css'
 const UpdatePlace = () => {
     const placeId = useParams().placeId
 
-    const [formState, inputHandler] = useForm({
+    const [isLoading, setIsLoading] = useState(true)
+
+    const [formState, inputHandler, setFormData] = useForm({
         title: {
             value: '',
-            isValid: true
+            isValid: false
         }
         ,
         description: {
             value: '',
-            isValid: true
+            isValid: false
         }
-    }, true)
+    }, false)
 
     const place = DUMMY_PLACES.find(item => item.id == placeId)
+
+    useEffect(() => {
+        if (place) {
+            setFormData({
+                title: {
+                    value: place.title,
+                    isValid: true
+                }
+                ,
+                description: {
+                    value: place.description,
+                    isValid: true
+                }
+            }, true);
+        }
+        setIsLoading(false)
+    }, [setFormData, place])
 
     const placeUpdateSubmitHandler = event => {
         event.preventDefault()
         console.log(formState.inputs)
     }
     if (!place) {
-        return <h2>Place not found!</h2>
+        return (
+            <div className='center'>
+                <Card>
+                    <h2>Place not found!</h2>
+                </Card>
+            </div>
+        )
+    }
+
+    if (isLoading) {
+        return <h2>Loading...</h2>
     }
 
     return (
+
         <form className='place-form' onSubmit={placeUpdateSubmitHandler}>
             <Input id='title'
                 element='input'
@@ -58,6 +89,7 @@ const UpdatePlace = () => {
             <Button type='submit' disabled={!formState.isValid}>UPDATE PLACE</Button>
 
         </form >
+
     )
 }
 
