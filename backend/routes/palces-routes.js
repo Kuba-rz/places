@@ -36,13 +36,20 @@ router.get('/', (req, res) => {
     res.json({ message: 'It works' })
 })
 
+router.get('/user/:uid', (req, res, next) => {
+    const uid = req.params.uid
+    const places = DUMMY_PLACES.filter(place => place.creator == uid)
+    res.json({ places })
+})
+
 router.get('/:pid', (req, res, next) => {
     const place = DUMMY_PLACES.find(place => place.id == req.params.pid)
     if (!place) {
-        res.json({ message: 'Place not found' })
+        res.status(404).json({ message: 'Place not found' })
     } else {
         res.json({ message: `Yay we got ${place.title}` })
     }
 })
+
 
 module.exports = router
