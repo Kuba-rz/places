@@ -1,25 +1,32 @@
 const { v4: uuid } = require('uuid')
 
+const HttpError = require('../models/http-error')
+
 const DUMMY_USERS = [
     {
         id: 1,
-        name: 'Kuba'
+        name: 'Kuba',
+        email: 'kuba@test.com'
     },
     {
         id: 2,
-        name: 'Kala'
+        name: 'Kala',
+        email: 'kala@test.com'
     },
     {
         id: 3,
-        name: 'Oskar'
+        name: 'Oskar',
+        email: 'oskar@test.com'
     },
     {
         id: 4,
-        name: 'Wiola'
+        name: 'Wiola',
+        email: 'wiola@test.com'
     },
     {
         id: 5,
-        name: 'Piotr'
+        name: 'Piotr',
+        email: 'piotr@test.com'
     }
 ]
 
@@ -30,31 +37,26 @@ const getUsers = (req, res, next) => {
 
 function signup(req, res, next) {
 
-    const { name } = req.body
-    const newUser = { id: uuid(), name }
+    const { name, email } = req.body
+    if (!name || !email) {
+        throw new HttpError('Please provide a name and an email', 401)
+    }
+    const hasUser = DUMMY_USERS.find(user => user.email == email)
+    if (hasUser) {
+        throw new HttpError('A user with this email address already exists', 422)
+    }
+    const newUser = { id: uuid(), name, email }
     DUMMY_USERS.push(newUser)
-    res.json({ 'message': 'uploaded succesfully' })
+    res.status(201).json({ 'message': 'uploaded succesfully' })
 }
 
 
-//const signup = (req, res, next) => {
-//    const { name } = req.body
-//    const newUser = { id: uuid(), name }
-//    DUMMY_USERS.push(newUser)
-//    res.json({ 'message': 'uploaded succesfully' })
-//}
-//
-//
-//const login = (req, res, next) => {
-//    const { name } = req.body
-//    const user = DUMMY_USERS.find(user => user.name == name)
-//    res.json({ 'user': user })
-//}
-
-
 const login = function (req, res, next) {
-    const { name } = req.body
-    const user = DUMMY_USERS.find(user => user.name == name)
+    const { name, email } = req.body
+    const user = DUMMY_USERS.find(user => user.email == email)
+    if (!user) {
+        throw new HttpError('Could not find a user with this email', 401)
+    }
     res.json({ 'user': user })
 }
 
