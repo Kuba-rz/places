@@ -1,6 +1,6 @@
 const HttpError = require('../models/http-error')
 
-const uuid = require('uuid/v4')
+const uuid = require('uuid')
 
 const DUMMY_PLACES = [
     {
@@ -66,4 +66,19 @@ const createPlace = (req, res, next) => {
     res.status(201).json({ DUMMY_PLACES })
 }
 
-module.exports = { getPlaceByUserId, getPlaceById, createPlace }
+const updatePlace = (req, res, next) => {
+    const { pid } = req.params
+    const { title, description } = req.body
+    const foundPlace = DUMMY_PLACES.find(place => place.id == pid)
+    foundPlace.title = title
+    foundPlace.description = description
+    res.json({ 'place': DUMMY_PLACES })
+}
+
+const deletePlace = (req, res, next) => {
+    const { pid } = req.params
+    const places = DUMMY_PLACES.filter(place => place.id != pid)
+    res.json({ "places": places })
+}
+
+module.exports = { getPlaceByUserId, getPlaceById, createPlace, updatePlace, deletePlace }
