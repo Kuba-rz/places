@@ -1,4 +1,5 @@
 const HttpError = require('../models/http-error')
+const { validationResult } = require('express-validator')
 
 const { v4: uuid } = require('uuid')
 
@@ -51,6 +52,13 @@ const getPlaceByUserId = (req, res, next) => {
 }
 
 const createPlace = (req, res, next) => {
+    const errors = validationResult(req)
+
+    if (!errors.isEmpty()) {
+        let errorString = ''
+        errors.errors.forEach(element => errorString += ` ${element.msg},`)
+        throw new HttpError(`The data is invalid, here is what is wrong with it: ${errorString}`, 422)
+    }
     const { title, description, coordinates, address, creator } = req.body
     const createdPlace = {
         id: uuid(),
@@ -67,6 +75,13 @@ const createPlace = (req, res, next) => {
 }
 
 const updatePlace = (req, res, next) => {
+    const errors = validationResult(req)
+
+    if (!errors.isEmpty()) {
+        let errorString = ''
+        errors.errors.forEach(element => errorString += ` ${element.msg},`)
+        throw new HttpError(`The data is invalid, here is what is wrong with it: ${errorString}`, 422)
+    }
     const { pid } = req.params
     const { title, description } = req.body
 
