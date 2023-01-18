@@ -37,7 +37,8 @@ const getPlaceById = (req, res, next) => {
     if (!place) {
         throw new HttpError('Could not find a place for the provided place ID', 404)
     } else {
-        res.json({ message: `Yay we got ${place.title}` })
+        res.json(place)
+        console.log(place)
     }
 }
 
@@ -97,6 +98,9 @@ const updatePlace = (req, res, next) => {
 const deletePlace = (req, res, next) => {
     const { pid } = req.params
     const placeIndex = DUMMY_PLACES.findIndex(p => p.id === pid)
+    if (!placeIndex) {
+        throw new HttpError('Could not find a place with the provided ID', 422)
+    }
     DUMMY_PLACES.splice(placeIndex, 1)
     res.status(200).json({ "places": DUMMY_PLACES })
 }
